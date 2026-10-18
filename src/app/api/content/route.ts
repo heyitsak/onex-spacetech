@@ -7,7 +7,7 @@ import { validateOrigin } from '@/lib/origin-check';
 import { sanitizeString, isValidObject, isValidNumber, sanitizeHtml, ALLOWED_CONTENT_FIELDS } from '@/lib/validation';
 
 function stripContent(content: SiteContent) {
-  const { adminPassword, privacyKey, memberLastUpdate, memberNextUpdate, ...publicContent } = content;
+  const { adminPassword, memberLastUpdate, memberNextUpdate, ...publicContent } = content;
   if (publicContent.stats) {
     delete (publicContent.stats as any).projectsLastUpdate;
     delete (publicContent.stats as any).projectsNextUpdate;
@@ -49,6 +49,15 @@ export async function PATCH(request: Request) {
     }
 
     const updates = body as Record<string, unknown>;
+
+    if (updates.path === 'increment') {
+      await incrementProjectValue(current);
+      await incrementProjectsCount(current);
+      await incrementMemberCount(current);
+      await saveContent(current);
+      return NextResponse.json(stripContent(current));
+    }
+
     const unknownFields = Object.keys(updates).filter(k => !ALLOWED_CONTENT_FIELDS.has(k));
     if (unknownFields.length > 0) {
       return NextResponse.json({ error: `Unknown fields: ${unknownFields.join(',')}` }, { status: 400 });

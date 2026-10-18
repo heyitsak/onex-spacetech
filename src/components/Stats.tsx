@@ -1,103 +1,42 @@
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
-interface StatsData { members: number; services: number; projects: number; events: number; }
-interface StatsProps { memberCount: number; stats: StatsData; }
-
-const icons = {
-  members: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-  services: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
-  projects: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>,
-  events: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
-};
-
-function Counter({ target, suffix = '', label, icon }: { target: number; suffix?: string; label: string; icon: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setInView(true); observer.unobserve(el); }
-    }, { threshold: 0.1 });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!inView) return;
-    const duration = 2000;
-    const startTime = performance.now();
-    const animate = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
-      if (progress < 1) requestAnimationFrame(animate);
-    };
-    requestAnimationFrame(animate);
-  }, [inView, target]);
-
-  return (
-    <div ref={ref} className="text-center p-4 md:p-6 opacity-0 animate-[fadeSlideUp_0.6s_ease_forwards]">
-      <div className="text-xl text-white/20 mb-3 flex justify-center">{icon}</div>
-      <div className="text-3xl md:text-4xl font-bold text-white mb-1.5 tabular-nums tracking-tight">
-        {count.toLocaleString()}{suffix}
-      </div>
-      <div className="text-[11px] text-white/25 uppercase tracking-[0.25em] font-light">{label}</div>
-    </div>
-  );
+interface StatsProps {
+  stats: {
+    members: number;
+    services: number;
+    projects: number;
+    events: number;
+  };
 }
 
-export default function Stats({ memberCount, stats }: StatsProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
+const items = [
+  { key: 'members', label: 'Members', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+  { key: 'services', label: 'Services', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
+  { key: 'projects', label: 'Projects', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
+  { key: 'events', label: 'Events', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
+];
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setInView(true); observer.unobserve(el); }
-    }, { threshold: 0.1 });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const statItems = [
-    { target: memberCount || stats.members, label: 'Members', icon: icons.members },
-    { target: stats.services, label: 'Services', icon: icons.services },
-    { target: stats.projects, label: 'Projects', icon: icons.projects },
-    { target: stats.events, label: 'Events', icon: icons.events },
-  ];
-
+export default function Stats({ stats }: StatsProps) {
   return (
-    <section id="stats" className="section-padding relative scroll-mt-16">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.01] to-transparent pointer-events-none" />
-      <div className="max-w-6xl mx-auto relative" ref={ref}>
-        <div className="text-center mb-10 md:mb-14 opacity-0 animate-[fadeSlideUp_0.5s_ease_forwards]">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05] text-[11px] text-white/25 uppercase tracking-[0.3em] font-light mb-5">
-            By the Numbers
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">
-            Our <span className="text-gradient">Impact</span>
-          </h2>
-          <p className="text-white/30 max-w-xl mx-auto text-sm font-light leading-relaxed">
-            Real metrics from a real community. Every number represents hours of dedication.
-          </p>
+    <section className="section-padding">
+      <div className="container-xl">
+        <div className="text-center mb-16">
+          <span className="text-[11px] font-semibold text-[#5A6275] uppercase tracking-[0.12em]">By the Numbers</span>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#E8ECF4] mt-3 tracking-tight">Our Reach</h2>
         </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {statItems.map((item, i) => (
-            <div
-              key={item.label}
-              className="glass rounded-xl border border-white/[0.04] hover:border-primary/[0.08] transition-all duration-500 card-glow opacity-0 animate-[fadeSlideUp_0.4s_ease_forwards]"
-              style={{ animationDelay: `${i * 0.08}s` }}
-            >
-              <Counter target={item.target} label={item.label} icon={item.icon} />
-            </div>
-          ))}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {items.map(item => {
+            const value = stats[item.key as keyof typeof stats];
+            return (
+              <div key={item.key} className="card p-6 sm:p-8 text-center">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[#5472E6] mx-auto mb-4">
+                  <path d={item.icon} />
+                </svg>
+                <div className="text-3xl sm:text-4xl font-bold text-[#E8ECF4] tabular-nums mb-1">
+                  {value?.toLocaleString() || '0'}
+                </div>
+                <div className="text-sm text-[#8A92A5] font-medium">{item.label}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

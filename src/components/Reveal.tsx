@@ -1,27 +1,20 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-interface RevealProps {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-  y?: number;
-  duration?: number;
-}
-
-export default function Reveal({ children, className, delay = 0, y = 15, duration = 0.6 }: RevealProps) {
+export default function Reveal({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setInView(true); observer.unobserve(el); }
-    }, { rootMargin: '-30px' });
-    observer.observe(el);
-    return () => observer.disconnect();
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
   return (
@@ -29,9 +22,9 @@ export default function Reveal({ children, className, delay = 0, y = 15, duratio
       ref={ref}
       className={className}
       style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? 'translateY(0)' : `translateY(${y}px)`,
-        transition: `opacity ${duration}s ${delay}s cubic-bezier(0.22, 1, 0.36, 1), transform ${duration}s ${delay}s cubic-bezier(0.22, 1, 0.36, 1)`,
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(12px)',
+        transition: 'opacity 0.5s ease, transform 0.5s ease',
       }}
     >
       {children}

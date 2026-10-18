@@ -218,7 +218,7 @@ export default function CoursesContent({ courses, certificates, communityName, s
                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 via-amber-300 to-amber-500" />
                 <div className="grid md:grid-cols-5 gap-0">
                   <div className="md:col-span-2 h-48 md:h-auto bg-gradient-to-br from-primary/[0.06] to-secondary/[0.03] flex items-center justify-center text-5xl relative">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(107,76,230,0.08)_0%,transparent_70%)]" />
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(226,232,240,0.04)_0%,transparent_70%)]" />
                     <span className="relative">{categoryIcons[courses[featured].category]}</span>
                   </div>
                   <div className="md:col-span-3 p-6 md:p-8 flex flex-col justify-center">
@@ -355,7 +355,7 @@ export default function CoursesContent({ courses, certificates, communityName, s
                       </div>
                     )}
                     <div className="h-28 bg-gradient-to-br from-primary/[0.04] to-secondary/[0.02] flex items-center justify-center text-3xl relative overflow-hidden">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(107,76,230,0.06)_0%,transparent_70%)]" />
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(226,232,240,0.03)_0%,transparent_70%)]" />
                       <span className="relative">{categoryIcons[course.category] || '📘'}</span>
                     </div>
 

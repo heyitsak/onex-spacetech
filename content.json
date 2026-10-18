@@ -1,9 +1,9 @@
 {
   "communityName": "OneX SpaceTechnologies Private",
   "tagline": "Beyond Boundaries. Beyond Limits. Forging the Future of Digital Excellence.",
-  "memberCount": 19867,
-  "memberLastUpdate": 1780835994571,
-  "memberNextUpdate": 1780922394571,
+  "memberCount": 19869,
+  "memberLastUpdate": 1781603127220,
+  "memberNextUpdate": 1781689527220,
   "topMembers": [
     {
       "name": "Alex Blount",
@@ -35,9 +35,9 @@
   "projectInfo": {
     "title": "Project Ecosystem Value",
     "description": "The aggregate value of all active projects, investments, and digital assets within our community ecosystem. This figure represents the community wealth we are building together — every deployment, every tournament, every line of code, every design. It grows as we grow.",
-    "value": 28707513780,
-    "lastUpdate": 1780897756100,
-    "nextUpdate": 1780904074647
+    "value": 28716492582,
+    "lastUpdate": 1781603127205,
+    "nextUpdate": 1781610315774
   },
   "inspirational": {
     "quote": "We don't just build projects. We build the future — one deployment, one tournament, one design at a time.",
@@ -5190,11 +5190,11 @@
   },
   "privacyKey": "$2a$12$JNBJwqldV75KdvnVJvcoquPa7wrl72jf6VEmV5FG7HEVTN7gFxLn6",
   "stats": {
-    "members": 19867,
+    "members": 19869,
     "services": 610,
-    "projects": 387245,
-    "projectsLastUpdate": 1780898933948,
-    "projectsNextUpdate": 1780902533948,
+    "projects": 387293,
+    "projectsLastUpdate": 1781608164607,
+    "projectsNextUpdate": 1781611764607,
     "events": 187
   },
   "adminPassword": "$2a$12$JNBJwqldV75KdvnVJvcoquPa7wrl72jf6VEmV5FG7HEVTN7gFxLn6",

@@ -1,187 +1,66 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
-import type { GalleryItem } from '@/types/content';
+import { useState } from 'react';
 
-export default function Gallery({ images }: { images: GalleryItem[] }) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  const [current, setCurrent] = useState(0);
-  const [noTransition, setNoTransition] = useState(true);
-  const [offsets, setOffsets] = useState<number[]>([]);
-  const measured = useRef(false);
+interface GalleryItem {
+  url: string;
+  description?: string;
+}
 
-  const total = images.length;
-  const itemsPerView = 3;
-  const totalPages = Math.max(1, Math.ceil(total / itemsPerView));
+interface GalleryProps {
+  images: GalleryItem[];
+}
 
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setInView(true); observer.unobserve(el); }
-    }, { threshold: 0.1 });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const slides = [images[total - 1], ...images, images[0]];
-
-  useLayoutEffect(() => {
-    if (!inView || measured.current) return;
-    const container = containerRef.current;
-    if (!container) return;
-    const children = container.querySelectorAll(':scope > div > div');
-    if (!children.length) return;
-    const computed: number[] = [];
-    children.forEach((child) => computed.push((child as HTMLElement).offsetLeft));
-    setOffsets(computed);
-    measured.current = true;
-    requestAnimationFrame(() => {
-      setNoTransition(false);
-      setCurrent(1);
-    });
-  }, [inView]);
-
-  const goTo = useCallback((target: number) => {
-    setNoTransition(false);
-    setCurrent(target);
-  }, []);
-
-  const slideCount = slides.length;
-
-  const next = useCallback(() => {
-    setCurrent((c: number) => {
-      const nextIdx = c + 1;
-      if (nextIdx >= slideCount - 1) {
-        setTimeout(() => {
-          setNoTransition(true);
-          setCurrent(1);
-        }, 500);
-        return nextIdx;
-      }
-      return nextIdx;
-    });
-  }, [slideCount]);
-
-  const prev = useCallback(() => {
-    setCurrent((c: number) => {
-      const prevIdx = c - 1;
-      if (prevIdx <= 0) {
-        setTimeout(() => {
-          setNoTransition(true);
-          setCurrent(slideCount - 2);
-        }, 500);
-        return prevIdx;
-      }
-      return prevIdx;
-    });
-  }, [slideCount]);
-
-  useEffect(() => {
-    if (!inView || total <= 1) return;
-    const timer = setInterval(next, 5000);
-    return () => clearInterval(timer);
-  }, [inView, total, next]);
-
+export default function Gallery({ images }: GalleryProps) {
+  const [selected, setSelected] = useState<number | null>(null);
   if (!images || images.length === 0) return null;
 
-  const page = Math.floor(((current - 1 + total) % total) / itemsPerView);
-  const offsetX = offsets[current] ?? 0;
-
   return (
-    <section id="gallery" className="section-padding relative overflow-hidden scroll-mt-16" ref={sectionRef}>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.01] to-transparent pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto">
-        <div className={`text-center mb-8 md:mb-12 transition-all duration-500 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[15px]'}`}>
-          <span className="inline-block px-4 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05] text-[11px] text-white/25 uppercase tracking-[0.3em] font-light mb-5">
-            Explore
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">
-            Mission <span className="text-gradient">Log</span>
-          </h2>
-          <p className="text-white/30 max-w-xl mx-auto text-sm font-light">
-            Capturing milestones across our journey
-          </p>
+    <section className="section-padding pt-0">
+      <div className="container-xl">
+        <div className="text-center mb-12">
+          <span className="text-[11px] font-semibold text-[#5A6275] uppercase tracking-[0.12em]">Media</span>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#E8ECF4] mt-3 tracking-tight">Gallery</h2>
         </div>
-
-        <div className="relative overflow-hidden">
-          <div ref={containerRef}>
-            <div
-              className="flex gap-4 will-change-transform"
-              style={{
-                transform: `translateX(-${offsetX}px)`,
-                transition: noTransition ? 'none' : 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              }}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setSelected(i)}
+              className="card overflow-hidden aspect-[4/3] p-0 group"
             >
-              {slides.map((item, i) => (
-                <div
-                  key={`${item.url}-${i}`}
-                  className="min-w-[calc(100%/1.1)] sm:min-w-[calc(50%-8px)] lg:min-w-[calc(33.333%-11px)] shrink-0 group relative"
-                  style={{
-                    opacity: inView ? 1 : 0,
-                    transform: inView ? 'translateY(0) scale(1)' : 'translateY(25px) scale(0.95)',
-                    transition: `opacity 0.5s ${i * 0.04}s, transform 0.5s ${i * 0.04}s`,
-                  }}
-                >
-                  <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-white/[0.02] border border-white/[0.04]">
-                    <div
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                      style={{ backgroundImage: `url(${item.url})` }}
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                    <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                      <p className="text-white/80 text-xs font-light leading-relaxed line-clamp-2">
-                        {item.description}
-                      </p>
-                    </div>
-
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                      <span className="inline-block px-2 py-0.5 rounded-md bg-white/10 backdrop-blur-md text-[10px] text-white/60 border border-white/10">
-                        {String(((i - 1 + total) % total) + 1).padStart(2, '0')}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3 mt-6">
-              <button
-                onClick={prev}
-                className="p-2 rounded-full glass hover:bg-white/5 disabled:opacity-20 transition-all"
-              >
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/60"><path d="M12 4l-6 6 6 6" /></svg>
-              </button>
-
-              <div className="flex gap-2">
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => goTo(i * itemsPerView + 1)}
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                      page === i ? 'bg-primary w-4' : 'bg-white/15 hover:bg-white/30'
-                    }`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={next}
-                className="p-2 rounded-full glass hover:bg-white/5 disabled:opacity-20 transition-all"
-              >
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/60"><path d="M8 4l6 6-6 6" /></svg>
-              </button>
-            </div>
-          )}
+              <img
+                src={img.url}
+                alt={img.description || ''}
+                className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-80"
+                loading="lazy"
+              />
+            </button>
+          ))}
         </div>
       </div>
+
+      {selected !== null && (
+        <div
+          className="fixed inset-0 z-50 bg-[rgba(0,0,0,0.9)] flex items-center justify-center p-6 cursor-pointer"
+          onClick={() => setSelected(null)}
+        >
+          <button
+            onClick={() => setSelected(null)}
+            className="absolute top-6 right-6 text-[#8A92A5] hover:text-[#E8ECF4] transition-colors"
+            aria-label="Close"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+          <img
+            src={images[selected].url}
+            alt={images[selected].description || ''}
+            className="max-w-full max-h-[85vh] object-contain rounded-lg"
+          />
+        </div>
+      )}
     </section>
   );
 }

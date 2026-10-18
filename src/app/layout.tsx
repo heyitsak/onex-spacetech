@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import EasterStar from "@/components/EasterStar";
+import ConsoleArt from "@/components/ConsoleArt";
 import "./globals.css";
 
 const inter = Inter({
@@ -10,51 +12,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "OneX SpaceTechnologies Private — Exclusive Digital Community",
-  description:
-    "A multi-disciplinary private community spanning software, AI, cybersecurity, design, media, infrastructure, space research, and more. 300+ services. 19000+ members. Founded 2020.",
-  keywords: [
-    "OneX", "SpaceTechnologies", "private community", "tech community",
-    "software development", "AI", "space research", "gaming", "design",
-    "hosting infrastructure", "digital services",
-  ],
-  authors: [{ name: "OneX SpaceTechnologies" }],
-  creator: "OneX SpaceTechnologies",
-  publisher: "OneX SpaceTechnologies",
-  openGraph: {
-    title: "OneX SpaceTechnologies Private",
-    description:
-      "Beyond Boundaries. Beyond Limits. An exclusive private community spanning 24 disciplines with 300+ services.",
-    type: "website",
-    siteName: "OneX SpaceTechnologies",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "OneX SpaceTechnologies Private",
-    description:
-      "Beyond Boundaries. Beyond Limits. An exclusive private community.",
-  },
-  robots: "index, follow",
-  icons: {
-    icon: "/favicon.svg",
-  },
+  title: "OneX SpaceTechnologies",
+  description: "A private community built for builders, thinkers, and explorers. Technology, space, and engineering.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`h-full scroll-smooth ${inter.variable}`}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
-      <body className="min-h-full bg-space-dark text-white antialiased font-sans" style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}>
+    <html lang="en" className={`${inter.variable}`}>
+      <body className="antialiased" style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}>
         <div className="grain-overlay" />
-        {children}
+        <EasterStar />
+        <ConsoleArt />
+        <div className="relative z-10">
+          {children}
+        </div>
       </body>
     </html>
   );

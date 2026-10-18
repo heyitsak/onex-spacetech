@@ -1,9 +1,7 @@
-import { getContent } from '@/lib/content';
 import Navbar from '@/components/Navbar';
+import ContactContent from '@/components/ContactContent';
 import Footer from '@/components/Footer';
-import ContactContent from './ContactContent';
-
-export const dynamic = 'force-dynamic';
+import { getContent } from '@/lib/content';
 
 export default async function ContactPage() {
   const content = await getContent();
@@ -11,7 +9,9 @@ export default async function ContactPage() {
   return (
     <>
       <Navbar />
-      <ContactContent communityName={content.communityName} socialLinks={content.socialLinks} tagline={content.tagline} contactInfo={content.contactInfo} />
+      <main>
+        <ContactContent contactInfo={content.contactInfo} socialLinks={content.socialLinks} />
+      </main>
       <Footer communityName={content.communityName} socialLinks={content.socialLinks} />
     </>
   );

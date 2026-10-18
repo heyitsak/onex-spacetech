@@ -9,7 +9,6 @@ export function middleware(request: NextRequest) {
     const allowedMethods = new Map([
       ['/api/content', new Set(['GET', 'PATCH'])],
       ['/api/auth/login', new Set(['POST'])],
-      ['/api/auth/privacy', new Set(['POST'])],
       ['/api/auth/logout', new Set(['POST'])],
       ['/api/auth/check', new Set(['GET'])],
     ]);
