@@ -18,8 +18,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Password is required' }, { status: 400 });
     }
 
-    const content = await getContent();
-    const valid = await verifyPassword(password, content.adminPassword);
+    let valid = false;
+    if (process.env.ADMIN_PASSWORD_HASH) {
+      valid = await verifyPassword(password, process.env.ADMIN_PASSWORD_HASH);
+    } else if (process.env.ADMIN_PASSWORD) {
+      valid = password === process.env.ADMIN_PASSWORD;
+    } else {
+      const content = await getContent();
+      if (content.adminPassword) {
+        valid = await verifyPassword(password, content.adminPassword);
+      }
+    }
 
     if (!valid) {
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 });

@@ -5188,7 +5188,6 @@
     "location": "OneX SpaceTechnologies Pvt. Ltd., Innovation Hub",
     "website": "www.onex.space"
   },
-  "privacyKey": "$2a$12$JNBJwqldV75KdvnVJvcoquPa7wrl72jf6VEmV5FG7HEVTN7gFxLn6",
   "stats": {
     "members": 19869,
     "services": 610,
@@ -5197,7 +5196,7 @@
     "projectsNextUpdate": 1781611764607,
     "events": 187
   },
-  "adminPassword": "$2a$12$JNBJwqldV75KdvnVJvcoquPa7wrl72jf6VEmV5FG7HEVTN7gFxLn6",
+  "adminPassword": "",
   "partners": [
     {
       "id": 1,

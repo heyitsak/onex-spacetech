@@ -2,7 +2,17 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'onex-spacestudios-secret-key-2024';
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET environment variable is missing.');
+    }
+    return 'dev-secret-do-not-use-in-production';
+  }
+  return secret;
+}
+
 const COOKIE_NAME = 'onex_admin_token';
 
 export async function hashPassword(password: string): Promise<string> {
@@ -15,12 +25,12 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export function signToken(): string {
-  return jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '24h' });
+  return jwt.sign({ role: 'admin' }, getJwtSecret(), { expiresIn: '24h' });
 }
 
 export function verifyToken(token: string): boolean {
   try {
-    jwt.verify(token, JWT_SECRET);
+    jwt.verify(token, getJwtSecret());
     return true;
   } catch {
     return false;
